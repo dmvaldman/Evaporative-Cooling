@@ -7,13 +7,11 @@ filepath = 'dataset/reddit_votes.csv'   #location of reddit data dump
 nRows = 10000                           #first rows of dataset to process
 nSkip = 100                             #skip every nSkip row of dataset
 
-file = open(filepath)
-
 #create subset of dataset and load it into 'data'
 data = []
 
 counter = 1
-for line in file:
+for line in open(filepath, 'r'):
     if counter % nSkip == 0:
         data.append(line.strip().split(','))
     if counter > nSkip*nRows:
