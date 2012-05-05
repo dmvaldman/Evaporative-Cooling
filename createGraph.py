@@ -7,19 +7,16 @@ filepath = 'dataset/reddit_votes.csv'   #location of reddit data dump
 nRows = 10000                           #first rows of dataset to process
 nSkip = 100                             #skip every nSkip row of dataset
 
-file = open(filepath)
-
 #create subset of dataset and load it into 'data'
-data = []
 
-counter = 1
-for line in file:
-    if counter % nSkip == 0:
-        data.append(line.strip().split(','))
-    if counter > nSkip*nRows:
-        break
-    counter = counter + 1
+# This requires 149mb of RAM (the size of reddit_votes.csv), unlike
+# the original way which read through the file one line at a time,
+# which is less resource intensive. The following is 'more pythonic'
+# because it requires no counter variable and will hopefully be
+# instructive overall. --Steve
 
+csv_lines = open(filepath, 'r').readlines()
+data = [csv_lines[ndx].strip().split(',') for ndx in xrange(0, len(csv_lines), nSkip)]
 
 #get all unique users
 users_all = list(set([row[0] for row in data]))
