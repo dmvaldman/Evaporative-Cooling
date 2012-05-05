@@ -4,59 +4,60 @@ import matplotlib.pyplot as plt
 import pydot
 
 filepath = '/Users/dmvaldman/Documents/datasets/reddit_votes.csv'
+nRows = 10000
+nSkip = 100
 
 file = open(filepath)
 
+#create subset of dataset and load it into 'data'
 data = []
-
-skip = 80
 
 counter = 1
 for line in file:
-    if counter % skip == 0:
+    if counter % nSkip == 0:
         data.append(line.strip().split(','))
-    if counter > skip*10000:
+    if counter > nSkip*nRows:
         break
     counter = counter + 1
 
-#get unique users
-users = list(set([row[0] for row in data]))
+
+#get all unique users
+users_all = list(set([row[0] for row in data]))
 
 
 #create edges
 data_sorted_by_link = sorted(data, key=itemgetter(1))
 
+#create dictionary of link : [users who upvoted the link]
 link_dict = {}
 linkID_old = ''
-counter_redundancy = 0
 for row in data_sorted_by_link:
-    #initialize new entry in edge dictionary
-    if row[1] != linkID_old:
-        linkID = row[1]
-        link_dict[linkID] = [row[0]]
+    #initialize new entry in dictionary
+    if row[1] != linkID_old:                    #if new link
+        linkID = row[1]                         #get link name
+        link_dict[linkID] = [row[0]]            #create entry of dictionary
         linkID_old = linkID
-    else:
-        link_dict[linkID_old].append(row[0])
-        counter_redundancy = counter_redundancy + 1
+    else:                                       #if old link
+        link_dict[linkID_old].append(row[0])    #append new user to list
 
+
+#create graph structure of nodes (connected users) and edges (shared liked articles)
 edges = []
-users_connected = []
+nodes = []
 for link in link_dict:
     shared_users = link_dict[link]
+    #check if link has more than one user who upvoted it
     if len(shared_users) > 1:
-        users_connected.append(shared_users)
+        nodes.append(shared_users)
         edges.append([(user1, user2) for user1 in shared_users for user2 in shared_users if shared_users.index(user1) > shared_users.index(user2)])
 
-
-users_connected_list = list(set(sum(users_connected,[])))
-
+#flatten the connected user list
+nodes = list(set(sum(nodes,[])))
 
 G = nx.Graph()
-G.add_nodes_from(users_connected_list)
+G.add_nodes_from(nodes)
 G.add_edges_from(sum(edges, []))
 
-#nx.draw(G)
-#plt.show()
-
-nx.draw_graphviz(G)
-nx.write_dot(G,'reddit.dot')
+#drawing the graph
+#nx.draw_graphviz(G)
+#nx.write_dot(G,'reddit.dot')
