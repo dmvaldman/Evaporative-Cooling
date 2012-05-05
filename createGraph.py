@@ -18,8 +18,7 @@ for line in file:
         data.append(line.strip().split(','))
     if counter > nSkip*nRows:
         break
-    counter = counter + 1
-
+    counter += 1
 
 #get all unique users
 users_all = list(set([row[0] for row in data]))
