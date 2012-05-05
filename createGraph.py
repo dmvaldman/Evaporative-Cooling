@@ -3,9 +3,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import pydot
 
-filepath = '/Users/dmvaldman/Documents/datasets/reddit_votes.csv'
-nRows = 10000
-nSkip = 100
+filepath = 'dataset/reddit_votes.csv'   #location of reddit data dump
+nRows = 10000                           #first rows of dataset to process
+nSkip = 100                             #skip every nSkip row of dataset
 
 file = open(filepath)
 
